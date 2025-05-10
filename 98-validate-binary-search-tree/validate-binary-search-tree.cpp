@@ -11,27 +11,23 @@
  */
 class Solution {
 public:
-    //Brute Force
-    void maxi(TreeNode* root,long& maximum){
+    //Method 3
+    TreeNode* prev = NULL;
+    bool flag = true;
+    void inorder(TreeNode* root){
         if(root==NULL) return;
-        maximum=max((long)root->val,maximum);
-        maxi(root->left,maximum);
-        maxi(root->right,maximum);
-    }
-    void mini(TreeNode* root,long& minimum){
-        if(root==NULL) return;
-        minimum=min((long)root->val,minimum);
-        mini(root->left,minimum);
-        mini(root->right,minimum);
+        inorder(root->left);
+        if(prev!=NULL){
+            if(root->val<=prev->val){
+                flag=false;
+                return;
+            }
+        }
+        prev=root;
+        inorder(root->right);
     }
     bool isValidBST(TreeNode* root) {
-        if(root==NULL) return true;
-        long maxii=LONG_MIN;
-        maxi(root->left,maxii);
-        long minii=LONG_MAX;
-        mini(root->right,minii);
-        if(root->val<=maxii) return false;
-        if(root->val>=minii) return false;
-        return isValidBST(root->left) && isValidBST(root->right);
+        inorder(root);
+        return flag;
     }
 };

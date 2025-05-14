@@ -11,25 +11,26 @@
  */
 class Solution {
 public:
-    TreeNode* build(vector<int>& preorder, int prelo, int prehi, vector<int>& inorder, int inlo, int inhi){
-        if(prelo>prehi) return NULL;
-        TreeNode* root=new TreeNode(preorder[prelo]);   //for the root node
-        if(prelo==prehi) return root;
-        int i = inlo;
-        while(i<=inhi){  //search that root node in inorder
-        if(inorder[i]==preorder[prelo]) break;
-        i++;
+    void insert(TreeNode* root, int val){
+        if(root==NULL) root=new TreeNode(val);
+        else if(root->val>val){ //go left
+            if(root->left==NULL){
+                root->left = new TreeNode(val);
+            }
+            else insert(root->left,val);
         }
-        int leftCount = i-inlo;
-        int rightCount = inhi-i;
-        root->left = build(preorder, prelo+1, prelo+leftCount, inorder, inlo, i-1);
-        root->right = build(preorder, prelo+leftCount+1, prehi, inorder, i+1, inhi);
-        return root;
+        else{ //root->val <val : go right
+        if(root->right==NULL){
+            root->right = new TreeNode(val);
+        }
+        else insert(root->right, val);
+        }
     }
     TreeNode* bstFromPreorder(vector<int>& preorder) {
-        int n = preorder.size();
-        vector<int> inorder = preorder;
-        sort(inorder.begin(),inorder.end());
-        return build(preorder,0,n-1,inorder,0,n-1);
+        TreeNode* root=new TreeNode(preorder[0]);
+        for(int i=1;i<preorder.size();i++){
+            insert(root,preorder[i]);
+        }
+        return root;
     }
 };

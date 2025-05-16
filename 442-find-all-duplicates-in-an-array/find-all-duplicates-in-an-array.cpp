@@ -1,11 +1,12 @@
 class Solution {
 public:
     vector<int> findDuplicates(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> index(n,0);
         vector<int> ans;
-        unordered_set<int> mySet;
         for(int i=0;i<nums.size();i++){
-            if(mySet.find(nums[i])!= mySet.end()) ans.push_back(nums[i]);
-            else mySet.insert(nums[i]);
+            if(index[nums[i]-1]==nums[i]) ans.push_back(nums[i]);
+            index[nums[i]-1] = nums[i];
         }
         return ans;
     }

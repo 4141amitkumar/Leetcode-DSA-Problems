@@ -14,4 +14,5 @@ public:
         }
         return pq.top();
     }
+    // But traversing on whole matrix, means t.c. is something something n^2.  O(n^2logk);
 };

@@ -1,9 +1,9 @@
 # Write your MySQL query statement below
-DELETE from Person
+DELETE FROM Person
 WHERE id NOT IN(
     SELECT * FROM(
-        SELECT min(id) 
+        SELECT MIN(id)
         FROM Person
         GROUP BY email
-    ) AS temp
+    ) AS unique_email
 );

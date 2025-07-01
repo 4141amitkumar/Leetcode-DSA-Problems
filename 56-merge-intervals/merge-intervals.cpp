@@ -1,22 +1,25 @@
 bool cmp(vector<int>& a, vector<int>& b){
-    return a[0]<b[0];
+    return a[1]<b[1];
 }
 class Solution {
 public:
+//method 2
     vector<vector<int>> merge(vector<vector<int>>& intervals) {
         vector<vector<int>> ans;
         sort(intervals.begin(),intervals.end(),cmp);
-        int i=0;
-        while(i<intervals.size()){
-            int a=intervals[i][0],b=intervals[i][1];
-            int j=i+1;
-            while(j<intervals.size() && intervals[j][0]<=b){
-                b=max(b,intervals[j][1]);
-                j++;
+        int n=intervals.size();
+        ans.push_back(intervals[n-1]);
+        for(int i=n-2;i>=0;i--){
+            vector<int> curr = intervals[i];
+            if(curr[1]>=ans[ans.size()-1][0]){
+                ans[ans.size()-1][0] = min(ans[ans.size()-1][0],curr[0]);
+                ans[ans.size()-1][1] = max(ans[ans.size()-1][1],curr[1]);
             }
-            i=j;
-            ans.push_back({a,b});
+            else{
+                ans.push_back(intervals[i]);
+            }
         }
+        reverse(ans.begin(),ans.end());
         return ans;
     }
 };

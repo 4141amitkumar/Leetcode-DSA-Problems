@@ -1,13 +1,14 @@
 class Solution {
 public:
-    //tabulation approach
+    // recursion + memoization approach
+    int helper(int n, vector<int>& dp){
+        if(n==0) return 0;
+        if(n==1 ||n==2) return 1;
+        if(dp[n]!=-1) return dp[n];
+        return dp[n]=helper(n-1,dp)+helper(n-2,dp)+helper(n-3,dp);
+    }
     int tribonacci(int n) {
-        vector<int> dp(n+1);
-        for(int i=0;i<=n;i++){
-            if(i==0) dp[i]=0;
-            else if(i==1 || i==2) dp[i]=1;
-            else dp[i]=dp[i-1]+dp[i-2]+dp[i-3];
-        }
-        return dp[n];
+        vector<int> dp(n+1,-1);
+        return helper(n,dp);
     }
 };

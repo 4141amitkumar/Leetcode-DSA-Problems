@@ -1,29 +1,16 @@
 # Write your MySQL query statement below
-SELECT  id, visit_date, people
-FROM Stadium s1
+SELECT id, visit_date, people
+FROM (
+    SELECT *, LAG(people,1) OVER (ORDER BY visit_date) AS prev1,
+    LAG(people,2) OVER (ORDER BY visit_date) AS prev2,
+    LEAD(people,1) OVER (ORDER BY visit_date) AS next1,
+    LEAD(people,2) OVER (ORDER BY visit_date) AS next2
+    FROM Stadium
+) t
 WHERE people>=100
-AND(
-    EXISTS(
-        SELECT 1
-        FROM Stadium s2, Stadium s3
-        WHERE s2.people>=100 AND s3.people>=100
-        AND s3.id=s2.id+1
-        AND s2.id=s1.id+1
-    )
-    OR
-    EXISTS(
-        SELECT 1
-        FROM Stadium s2, Stadium s3
-        WHERE s2.people>=100 AND s3.people>=100
-        AND s3.id=s2.id-1
-        AND s2.id=s1.id-1
-    )
-    OR
-    EXISTS(
-        SELECT 1
-        FROM Stadium s2, Stadium s3
-        WHERE s2.people>=100 AND s3.people>=100
-        AND s3.id=s1.id+1
-        AND s2.id=s1.id-1
-    )
-);
+AND (
+    (prev1>=100 AND prev2>=100)
+    OR (prev1>=100 AND next1>=100)
+    OR (next1>=100 AND next2>=100)
+)
+ORDER BY visit_date;

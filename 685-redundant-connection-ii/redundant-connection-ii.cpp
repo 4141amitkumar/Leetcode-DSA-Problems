@@ -1,33 +1,27 @@
 class Solution {
 public:
-    // DFS se cycle check
-    bool dfsCycle(int u, vector<vector<int>>& adj, vector<int>& vis, vector<int>& rec) {
-        vis[u] = 1;
-        rec[u] = 1;
+    bool hasCycleBFS(int n, vector<vector<int>>& edges, vector<int>& banned) {
+        vector<vector<int>> adj(n+1);
+        vector<int> indeg(n+1, 0);
 
-        for (int v : adj[u]) {
-            if (!vis[v]) {
-                if (dfsCycle(v, adj, vis, rec)) return true;
-            } else if (rec[v]) {
-                return true; // back edge -> cycle
+        for (auto &e : edges) {
+            if (e == banned) continue; 
+            adj[e[0]].push_back(e[1]);
+            indeg[e[1]]++;
+        }
+
+        queue<int> q;
+        for (int i = 1; i <= n; i++) if (indeg[i] == 0) q.push(i);
+
+        int cnt = 0;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            cnt++;
+            for (int v : adj[u]) {
+                if (--indeg[v] == 0) q.push(v);
             }
         }
-
-        rec[u] = 0;
-        return false;
-    }
-
-    bool hasCycleDFS(int n, vector<vector<int>>& edges, vector<int>& banned) {
-        vector<vector<int>> adj(n+1);
-        for (auto &e : edges) {
-            if (e == banned) continue; // skip banned edge
-            adj[e[0]].push_back(e[1]);
-        }
-        vector<int> vis(n+1, 0), rec(n+1, 0);
-        for (int i = 1; i <= n; i++) {
-            if (!vis[i] && dfsCycle(i, adj, vis, rec)) return true;
-        }
-        return false;
+        return cnt != n; // agar sab node visit nahi hue -> cycle hai
     }
 
     vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {
@@ -46,15 +40,14 @@ public:
             }
         }
 
-        // Step 2: check cycle by skipping candidate edges
+        // Step 2: check cycle using BFS
         if (!cand1.empty()) {
-            if (!hasCycleDFS(n, edges, cand2)) return cand2;
+            if (!hasCycleBFS(n, edges, cand2)) return cand2;
             return cand1;
         }
 
-        // Normal cycle case
         for (int i = n-1; i >= 0; i--) {
-            if (hasCycleDFS(n, edges, edges[i]) == false) return edges[i];
+            if (!hasCycleBFS(n, edges, edges[i])) return edges[i];
         }
         return {};
     }

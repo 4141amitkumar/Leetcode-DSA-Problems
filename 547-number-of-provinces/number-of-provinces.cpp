@@ -1,46 +1,21 @@
-class DSU{
-    vector<int> parent, rank;
-public:
-    DSU(int n){
-        parent.resize(n);
-        rank.resize(n,0);
-        for(int i=0;i<n;i++) parent[i]=i;
-    }
-    int find(int x){
-        if(parent[x]!=x) parent[x]=find(parent[x]);
-        return parent[x];
-    }
-    void unite(int x,int y){
-        int px=find(x);
-        int py=find(y);
-        if(px==py) return;
-        if(rank[px]<rank[py]) parent[px]=py;
-        else if(rank[px]>rank[py]) parent[py]=px;
-        else{
-            parent[py]=px;
-            rank[px]++;
-        }
-    }
-};
 class Solution {
 public:
+    void dfs(int node, vector<vector<int>>& isConnected, vector<bool>& vis){
+        vis[node]=1;
+        for(int i=0;i<isConnected.size();i++){
+            if(!vis[i] && isConnected[node][i]==1) dfs(i,isConnected, vis);
+        }
+    }
     int findCircleNum(vector<vector<int>>& isConnected) {
-        //using DSU
         int n = isConnected.size();
-        DSU dsu(n);
-        //step 1: union all directly connected cities
+        vector<bool> vis(n,0);
+        int ans=0;
         for(int i=0;i<n;i++){
-            for(int j=i+1;j<n;j++){
-                if(isConnected[i][j]==1){
-                    dsu.unite(i,j);
-                }
+            if(!vis[i]){
+                ans++;
+                dfs(i,isConnected,vis);
             }
         }
-        // step 2: count unique parents = number of provinces
-        unordered_set<int> uniqueParents;
-        for(int i=0;i<n;i++){
-            uniqueParents.insert(dsu.find(i));
-        }
-        return uniqueParents.size();
+        return ans;
     }
 };
